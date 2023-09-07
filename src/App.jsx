@@ -11,21 +11,26 @@ function App() {
     url: "",
     method: "GET",
     body: null,
-    headers: {},
+    headers: null,
   });
   const [loading, setLoading] = useState(false);
 
   const [jsonData, setJsonData] = useState(null);
+  const [error, setError] = useState(null);
 
   const submit = async () => {
-    setLoading(true);
+    setError(null);
 
+    if (value.url === "") return;
+
+    setLoading(true);
+    console.log(value.headers);
     try {
       const response = await axios({
         method: value.method,
         url: value.url,
-        body: JSON.parse(value.body),
-        headers: value.headers,
+        data: JSON.parse(value.body),
+        headers: JSON.parse(value.headers),
       });
 
       setJsonData(response);
@@ -33,11 +38,12 @@ function App() {
     } catch (error) {
       setJsonData(null);
       setLoading(false);
+      setError(error);
     }
   };
 
   return (
-    <Grid container sx={{ marginTop: 4 }}>
+    <Grid container sx={{ padding: 4 }}>
       <InputField
         loading={loading}
         submit={submit}
@@ -59,6 +65,11 @@ function App() {
               <pre>{JSON.stringify(jsonData?.data, null, 2)}</pre>
             </Grid>
           </>
+        )}
+        {error && (
+          <pre>
+            <Typography>{JSON.stringify(error, null, 2)}</Typography>
+          </pre>
         )}
       </Grid>
     </Grid>

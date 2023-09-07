@@ -51,7 +51,49 @@ const URLInput = ({ value, setValue, loading }) => {
 };
 
 const HeadersInput = (props) => {
-  return <></>;
+  const [value, setValue] = useState("");
+
+  const onChange = (event) => {
+    props.setValue({ ...props.value, headers: event.target.value });
+    setValue(event.target.value);
+  };
+
+  return (
+    <TextField
+      fullWidth
+      value={value}
+      placeholder={`{
+    "key1": "value",
+    "key2": ["value1", "value2"],
+    "key3": {}
+}`}
+      onChange={onChange}
+      multiline
+      rows={10}
+      onKeyDown={(e) => {
+        const { value } = e.target;
+
+        if (e.key === "Tab") {
+          e.preventDefault();
+
+          const cursorPosition = e.target.selectionStart;
+          const cursorEndPosition = e.target.selectionEnd;
+          const tab = "\t";
+
+          e.target.value =
+            value.substring(0, cursorPosition) +
+            tab +
+            value.substring(cursorEndPosition);
+
+          // if you modify the value programmatically, the cursor is moved
+          // to the end of the value, we need to reset it to the correct
+          // position again
+          e.target.selectionStart = cursorPosition + 1;
+          e.target.selectionEnd = cursorPosition + 1;
+        }
+      }}
+    />
+  );
 };
 
 const BodyInput = (props) => {
@@ -104,10 +146,17 @@ const BodyInput = (props) => {
   );
 };
 
-const TABS = ["Body"];
+const TABS = ["Headers"];
+const HEADERTABS = ["Headers", "Body"];
 
 const DataTabs = (props) => {
-  const [tab, setTab] = useState("Body");
+  let tabs = HEADERTABS;
+
+  if (props.value.method === "GET" || props.value.method === "DELETE") {
+    tabs = TABS;
+  }
+
+  const [tab, setTab] = useState(TABS[0]);
 
   const handleChange = (event, newTab) => {
     setTab(newTab);
@@ -122,14 +171,10 @@ const DataTabs = (props) => {
     }
   }, [tab, props]);
 
-  if (props.value.method === "GET" || props.value.method === "DELETE") {
-    return <></>;
-  }
-
   return (
     <>
       <Tabs value={tab} onChange={handleChange}>
-        {TABS.map((tab) => (
+        {tabs.map((tab) => (
           <Tab label={tab} key={tab} value={tab} />
         ))}
       </Tabs>
