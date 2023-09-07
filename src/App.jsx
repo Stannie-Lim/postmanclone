@@ -24,7 +24,7 @@ function App() {
     if (value.url === "") return;
 
     setLoading(true);
-    console.log(value.headers);
+
     try {
       const response = await axios({
         method: value.method,
