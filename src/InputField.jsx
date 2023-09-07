@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 
 import {
   Grid,
@@ -156,7 +156,11 @@ const DataTabs = (props) => {
     tabs = TABS;
   }
 
-  const [tab, setTab] = useState(TABS[0]);
+  const [tab, setTab] = useState(tabs[0]);
+
+  useEffect(() => {
+    setTab(tabs[0]);
+  }, [props.value.method]);
 
   const handleChange = (event, newTab) => {
     setTab(newTab);
